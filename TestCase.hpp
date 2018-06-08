@@ -6,11 +6,11 @@ class TestCase
 {
     
     public:
-        string namecase;
         int total, failed, passed;
-        TestCase(string name , ostream& os):total(0),failed(0),passed(0)
+        ostream stream;
+        string namecase;
+        TestCase(string name , ostream& os):total(0),failed(0),passed(0),stream(os.rdbuf()),namecase(name)
         {
-            namecase = name;
         }
         template <typename T> TestCase& check_equal(T a ,T b)
         {
@@ -21,7 +21,7 @@ class TestCase
             }
             else
             {
-                cout << namecase << ": Failure in test #" << total << ": " << a << " should equal " << b << "!" << endl;
+                stream << namecase << ": Failure in test #" << total << ": " << a << " should equal " << b << "!" << endl;
                 failed++;
             }
             return *this;
@@ -35,7 +35,7 @@ class TestCase
             }
             else
             {
-                cout << namecase << ": Failure in test #" << total << ": " << a << " should not equal " << b << "!" << endl;
+                stream << namecase << ": Failure in test #" << total << ": " << a << " should not equal " << b << "!" << endl;
                 failed++;
             }
             return *this;
@@ -51,7 +51,7 @@ class TestCase
             }
             else
             {
-                cout << namecase << ": Failure in test #" << total << ": string value should be " << b << " but is " << a << endl;
+                stream << namecase << ": Failure in test #" << total << ": string value should be " << b << " but is " << a << endl;
                 failed++;
             }
             return *this;
@@ -65,13 +65,18 @@ class TestCase
             }
             else
             {
-                cout << namecase << ": Failure in test #" << total << ": Function should return " << b << " but returned " << (*fun)(a) << "!" << endl;
+                stream << namecase << ": Failure in test #" << total << ": Function should return " << b << " but returned " << (*fun)(a) << "!" << endl;
                 failed++;
             }
             return *this;
         }
         void print()
         {
-            cout << namecase << ": " << failed << " failed, " << passed << " passed, " << total << " total." << endl << endl;
+            stream << namecase << ": " << failed << " failed, " << passed << " passed, " << total << " total." << endl << endl;
+            cout << *this;
+        }
+        friend ostream& operator<<(ostream& os, TestCase& obj)
+        {
+            return obj.stream;
         }
 };
