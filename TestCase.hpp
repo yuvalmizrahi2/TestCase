@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 class TestCase
@@ -9,9 +10,9 @@ class TestCase
         int total, failed, passed;
         ostream stream;
         string namecase;
-        TestCase(string name , ostream& os):total(0),failed(0),passed(0),stream(os.rdbuf()),namecase(name)
-        {
-        }
+        TestCase(string name , ostream& os);
+        void print();
+        friend ostream& operator<<(ostream& os, TestCase& obj);
         template <typename T> TestCase& check_equal(T a ,T b)
         {
             total++;
@@ -42,7 +43,7 @@ class TestCase
         }
         template <typename T> TestCase& check_output(T a ,string b)
         {
-            stringstream ss;
+            ostringstream ss;
             ss << a;
             total++;
             if(ss.str() == b)
@@ -69,14 +70,5 @@ class TestCase
                 failed++;
             }
             return *this;
-        }
-        void print()
-        {
-            stream << namecase << ": " << failed << " failed, " << passed << " passed, " << total << " total." << endl << endl;
-            cout << *this;
-        }
-        friend ostream& operator<<(ostream& os, TestCase& obj)
-        {
-            return obj.stream;
         }
 };
